@@ -234,7 +234,7 @@ class JBSchemeXMLBuilder(XMLSerializable):
     name: str
     color_spec: JBColorSpec
     attrs: Iterable[JBAttrSpec]
-    font_spec: JBFontSpec
+    font_spec: JBFontSpec | None
 
     version: int = 142
     ide: str = "idea"
@@ -265,8 +265,9 @@ class JBSchemeXMLBuilder(XMLSerializable):
         with b.ep.attributes():
             for attr in self.attrs:
                 b.append(attr.to_xml())
-        for option in self.font_spec.to_options():
-            b.append(option.to_xml())
+        if self.font_spec is not None:
+            for option in self.font_spec.to_options():
+                b.append(option.to_xml())
 
         return b.root()
 
@@ -287,7 +288,10 @@ class JBSchemeProcessor(PaletteProcessor):
 
     def _generate_body(self, concrete_palette: ConcretePalette, args: Namespace) -> str:
         scheme = yaml.full_load(Path(args.spec).read_text())
-        font = JBFontSpec(**scheme["font"])
+        if "font" in scheme:
+            font = JBFontSpec(**scheme["font"])
+        else:
+            font = None
         palette = ConcretePalette.from_config(yaml.full_load(Path(args.palette).read_text()))
 
         print(f"Generating scheme for {palette.name}, view {palette.view}")
