@@ -58,6 +58,7 @@ class JBThemeProcessor(PaletteProcessor):
             "author": author,
             "dark": dark,
             "editorScheme": "/" + editor_scheme,
+            "parentTheme": "Islands Light",
             **({"colors": pal.hex_map} if not args.inline_colors else {}),
             "ui": ui_dict,
             "icons": icon_section,
